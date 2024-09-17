@@ -226,7 +226,7 @@ namespace ns_control
             return true;
         }
 
-        bool oneQuestions(const std::string& num, std::string* html)
+        bool oneQuestion(const std::string& num, std::string* html)
         {
             ns_model_MySQL::Question q;
 
