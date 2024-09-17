@@ -2,8 +2,13 @@
 
 #include <atomic>
 #include <mutex>
+#include <assert.h>
+#include <jsoncpp/json/json.h>
 
+#include "OJ_view.hpp"
+#include "OJ_model_MySQL.hpp"
 #include "../comm/util.hpp"
+#include "../comm/httplib.h"
 
 namespace ns_control
 {
@@ -36,6 +41,16 @@ namespace ns_control
         uint32_t getLoad()
         {
             return a_loads;
+        }
+
+        std::string getIP()
+        {
+            return _IP;
+        }
+
+        uint16_t getPort()
+        {
+            return _port;
         }
 
     private:
@@ -75,9 +90,9 @@ namespace ns_control
                 return false;
             }
 
-            std::string line;                   // 从文件流中读取缓冲区
-            std::vector<std::string> tokens;    // 分割字符串后的结果缓冲区
-            
+            std::string line;                // 从文件流中读取缓冲区
+            std::vector<std::string> tokens; // 分割字符串后的结果缓冲区
+
             while (getline(in, line))
             {
                 ns_util::splitUtil::splitString(line, ":", &tokens);
@@ -100,7 +115,7 @@ namespace ns_control
         }
 
         // 两个输出型参数，分别是主机的ID号，和描述主机的二级指针，以及返回是否选择成功
-        bool smartChoice(int* num, Machine** ppmachine)
+        bool smartChoice(int *num, Machine **ppmachine)
         {
             // 1. 判断是否还有主机在线
             _mutex.lock();
@@ -112,8 +127,8 @@ namespace ns_control
             }
 
             // 2.遍历所有在线的主机表,找到负载最小的主机号
-            int min_num = _onlines[0];                          // 用来存储负载最小的主机的编号
-            uint32_t min_load = _machines[min_num].getLoad();   // 用来存储负载最小的主机的负载量
+            int min_num = _onlines[0];                        // 用来存储负载最小的主机的编号
+            uint32_t min_load = _machines[min_num].getLoad(); // 用来存储负载最小的主机的负载量
 
             for (int i = 1; i < _onlines.size(); i++)
             {
@@ -125,7 +140,6 @@ namespace ns_control
                     min_num = tmp_num;
                 }
             }
-
 
             _mutex.unlock();
 
@@ -142,12 +156,142 @@ namespace ns_control
             _offlines.clear();
             _mutex.unlock();
         }
-        
+
+        // 展示所有主机，分别将离线主机，在线主机打印出来，主要debug使用
+        void showMachine()
+        {
+            std::cout << "在线主机: ";
+            for (int x : _onlines)
+            {
+                std::cout << x << " ";
+            }
+            std::cout << std::endl;
+
+            std::cout << "离线主机: ";
+            for (int x : _offlines)
+            {
+                std::cout << x << " ";
+            }
+            std::cout << std::endl;
+        }
+
     private:
         std::vector<Machine> _machines; // 存储所有的主机，每个主机的下标就是天然的主机编号
         std::vector<int> _onlines;      // 记录所有上线状态的主机编号
-        std::vector<int> _offlines;      // 记录所有下线状态的主机编号
+        std::vector<int> _offlines;     // 记录所有下线状态的主机编号
         std::mutex _mutex;              // 锁，由于STL不保证线程安全，需要加锁保护
+    };
+
+    // 核心控制器
+    class Control
+    {
+    public:
+        Control()
+        {
+        }
+        ~Control()
+        {
+        }
+
+        // 将所有主机恢复为在线状态
+        void recoveryMachine()
+        {
+            _lb.onlineMachine();
+        }
+
+        //
+        bool allQuestions(std::string *html)
+        {
+            std::vector<ns_model_MySQL::Question> questions;
+
+            if (!_model.getAllQuestions(&questions))
+            {
+                lg(Error, "获取所有题目失败, 无法构成网页!\n");
+                *html = "获取所有题目失败, 无法构成网页!";
+                return false;
+            }
+
+            std::sort(questions.begin(), questions.end(),
+                      [](const ns_model_MySQL::Question &q1, const ns_model_MySQL::Question &q2)
+                      {
+                          int num1 = std::stoi(q1.number);
+                          int num2 = std::stoi(q2.number);
+                          assert(!(num1 == num2));
+
+                          return (num1 < num2);
+                      });
+
+            _view.AllExpandHtml(questions, html);
+
+            return true;
+        }
+
+        bool oneQuestions(const std::string& num, std::string* html)
+        {
+            ns_model_MySQL::Question q;
+
+            if (!_model.getOneQuestion(num, &q))
+            {
+                lg(Error, "获取题号%s的题目信息失败, 无法构建网页!\n", num.c_str());
+                *html = "获取单个题目失败,无法构成网页!";
+                return false;
+            }
+
+            _view.OneExpandHtml(q, html);
+            return true;
+        }
+
+        void Judge(const std::string& num, const std::string& in_json, std::string out_json)
+        {
+            // 1.根据题号,拿到相应的题目信息
+            ns_model_MySQL::Question q;
+            _model.getOneQuestion(num, &q);
+
+            // 2.对题目信息反序列化,保存到json串中,其中in_json中的主要信息有code和input
+            Json::Value in_value;
+            Json::Reader reader;
+            reader.parse(in_json, in_value);
+
+            // 3.构建compile_server所需要的json串
+            Json::Value compile_value;
+            std::string code = in_value["code"].asString();
+            code += "\n";
+            code += q.tail;
+            
+            compile_value["code"] = code;
+            compile_value["input"] = in_value["input"].asString();
+            compile_value["cpu_limit"] = q.cpu_limit;
+            compile_value["mem_limit"] = q.mem_limit;
+
+            Json::FastWriter writer;
+            std::string compile_string = writer.write(compile_value);
+
+            // 4.选择负载均衡最低的主机
+            // 注意：并不是一寻找就能找到的，可能找到的主机已经挂掉了
+            // 这个时候就要将挂掉的主机放入offlines中
+            // 然后再去寻找新的主机
+            // 这样结果要么就直接找到，要么就全部挂掉
+            int host_id = 0;
+            while (true)
+            {
+                Machine* pmachine;
+                if (!_lb.smartChoice(&host_id, &pmachine))
+                {
+                    // 主机全挂了
+                    break;
+                }
+
+                // 选到了一个主机
+                // 5. 向主机发送http请求,得到结果,通过返回的状态码判断主机是否还在线
+                httplib::Client cli(pmachine->getIP(), pmachine->getPort());
+                pmachine->inLoad();
+            }
+        }
+
+    private:
+        ns_view::View _view;
+        ns_model_MySQL::Model _model;
+        LoadBalance _lb;
     };
 
 }
