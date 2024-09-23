@@ -3,9 +3,9 @@
 #include <sys/resource.h>
 #include <jsoncpp/json/json.h>
 
-#include "../comm/util.hpp"
+#include "./comm/util.hpp"
 #include "compile.hpp"
-#include "run.hpp"
+#include "Runner.hpp"
 
 namespace ns_compile_run
 {
@@ -80,9 +80,9 @@ namespace ns_compile_run
             }
 
             // 5.运行代码
-            ns_run::Runner runner;
+            // ns_run::Runner runner;
 
-            status = runner.run(file_name, cpu_limit, mem_limit);
+            status = ns_run::Runner::run(file_name, cpu_limit, mem_limit);
             getOutJson(status, out_json, file_name);
         }
 
@@ -103,6 +103,7 @@ namespace ns_compile_run
             if (code == 0)
             {
                 // 程序执行完成
+
                 std::string stdout_file_name = ns_util::pathUtil::Stdout(file_name);
                 std::string stderr_file_name = ns_util::pathUtil::Stderr(file_name);
 
@@ -121,7 +122,7 @@ namespace ns_compile_run
             Json::StyledWriter writer;
             *out_json = writer.write(out_value);
 
-            removeTempFile(file_name);
+            // removeTempFile(file_name);
         }
 
         static std::string codeToDesc(int code, const std::string &file_name)
@@ -148,6 +149,8 @@ namespace ns_compile_run
                 return "Floating overflow!";
             case SIGXCPU: // 24
                 return "CPU timeout!";
+            case SIGSEGV: // 11
+                return "Segmentation Fault!";
             default:
             {
                 return "Unknown error, status code: " + std::to_string(code);

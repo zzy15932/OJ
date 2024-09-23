@@ -12,6 +12,8 @@
 
 namespace ns_control
 {
+    const std::string http_pattern = "/compile_and_run";
+
     class Machine
     {
     public:
@@ -25,38 +27,59 @@ namespace ns_control
 
         void inLoad()
         {
-            a_loads++;
+            a_loads.fetch_add(1, std::memory_order_relaxed);
         }
 
         void deLoad()
         {
-            a_loads--;
+            a_loads.fetch_sub(1, std::memory_order_relaxed);
         }
 
         void resetLoad()
         {
-            a_loads = 0;
+            a_loads.store(0, std::memory_order_relaxed);
         }
 
-        uint32_t getLoad()
+        uint32_t getLoad() const
         {
-            return a_loads;
+            return a_loads.load(std::memory_order_relaxed);
         }
 
-        std::string getIP()
+        std::string getIP() const
         {
             return _IP;
         }
 
-        uint16_t getPort()
+        uint16_t getPort() const
         {
             return _port;
         }
 
+        Machine(const Machine &) = delete;
+        Machine &operator=(const Machine &) = delete;
+
+        Machine(Machine &&other) noexcept
+            : _IP(std::move(other._IP)), _port(other._port), a_loads(other.a_loads.load())
+        {
+        }
+
+        // 移动赋值运算符
+        Machine &operator=(Machine &&other) noexcept
+        {
+            if (this != &other)
+            {
+                _IP = std::move(other._IP);
+                _port = other._port;
+                a_loads.store(other.a_loads.load());
+                other.a_loads.store(0);
+            }
+            return *this;
+        }
+
     private:
-        std::string _IP;               // 主机IP地址
-        uint16_t _port;                // 主机端口号
-        std::atomic<uint32_t> a_loads; // 负载量，原子类型，保证线程安全
+        std::string _IP;          // 主机IP地址
+        uint16_t _port;           // 主机端口号
+        std::atomic_uint a_loads; // 负载量，原子类型，保证线程安全
     };
 
     const std::string conf_path = "./service_machine.conf";
@@ -175,6 +198,30 @@ namespace ns_control
             std::cout << std::endl;
         }
 
+        // 下线指定主机
+        void offlineMachine(int host_id)
+        {
+            _mutex.lock();
+            if (_machines.size() <= host_id)
+            {
+                lg(Warning, "要下线的主机: %d 不存在!\n", host_id);
+                return;
+            }
+
+            for (auto it = _onlines.begin(); it != _onlines.end(); it++)
+            {
+                if (*it == host_id)
+                {
+                    // 由于直接break，所以不需要考虑迭代器失效的问题
+                    _onlines.erase(it);
+                    _offlines.push_back(host_id);
+                    break;
+                }
+            }
+
+            _mutex.unlock();
+        }
+
     private:
         std::vector<Machine> _machines; // 存储所有的主机，每个主机的下标就是天然的主机编号
         std::vector<int> _onlines;      // 记录所有上线状态的主机编号
@@ -199,7 +246,7 @@ namespace ns_control
             _lb.onlineMachine();
         }
 
-        //
+        // 获取所有问题
         bool allQuestions(std::string *html)
         {
             std::vector<ns_model_MySQL::Question> questions;
@@ -226,7 +273,7 @@ namespace ns_control
             return true;
         }
 
-        bool oneQuestion(const std::string& num, std::string* html)
+        bool oneQuestion(const std::string &num, std::string *html)
         {
             ns_model_MySQL::Question q;
 
@@ -241,7 +288,7 @@ namespace ns_control
             return true;
         }
 
-        void Judge(const std::string& num, const std::string& in_json, std::string out_json)
+        void Judge(const std::string &num, const std::string &in_json, std::string *out_json)
         {
             // 1.根据题号,拿到相应的题目信息
             ns_model_MySQL::Question q;
@@ -257,7 +304,7 @@ namespace ns_control
             std::string code = in_value["code"].asString();
             code += "\n";
             code += q.tail;
-            
+
             compile_value["code"] = code;
             compile_value["input"] = in_value["input"].asString();
             compile_value["cpu_limit"] = q.cpu_limit;
@@ -274,7 +321,7 @@ namespace ns_control
             int host_id = 0;
             while (true)
             {
-                Machine* pmachine;
+                Machine *pmachine = nullptr;
                 if (!_lb.smartChoice(&host_id, &pmachine))
                 {
                     // 主机全挂了
@@ -284,7 +331,35 @@ namespace ns_control
                 // 选到了一个主机
                 // 5. 向主机发送http请求,得到结果,通过返回的状态码判断主机是否还在线
                 httplib::Client cli(pmachine->getIP(), pmachine->getPort());
+
+                // 发送post请求，并增加负载
                 pmachine->inLoad();
+
+                lg(Info, "选择主机id: %d, ip: %s, port: %d, load: %d 尝试进行编译运行服务...\n",
+                   host_id, pmachine->getIP().c_str(), pmachine->getPort(), pmachine->getLoad());
+
+                httplib::Result res = cli.Post(http_pattern.c_str(), compile_string, "application/json;charset=utf-8");
+                // httplib::Result 类型使httplib库中的定义的类，其中重载了->操作符
+                // 可以用于获取response中的各种信息
+
+                // 判断结果有效，并且状态码为200才说明是成功的
+                if (res && res->status == 200)
+                {
+                    *out_json = res->body;
+                    // 请求完毕，减少负载
+                    pmachine->deLoad();
+                    lg(Info, "编译运行服务完成...\n");
+                    break;
+                }
+                else
+                {
+                    // 失败，需要重新请求，并且将此次选择的主机放到下线表中
+                    lg(Warning, "本次请求的主机id: %d, 请求失败, ip: %s, port: %d\n",
+                       host_id, pmachine->getIP().c_str(), pmachine->getPort());
+                    pmachine->resetLoad();
+                    _lb.offlineMachine(host_id);
+                    _lb.showMachine(); // for debug
+                }
             }
         }
 

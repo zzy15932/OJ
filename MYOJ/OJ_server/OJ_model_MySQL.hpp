@@ -72,10 +72,11 @@ namespace ns_model_MySQL
             lg(Info, "数据库连接成功!\n");
 
             // 3.下发SQL命令
-            if (0 != mysql_query(my, query.c_str()))
-                ;
+            int ret = mysql_query(my, query.c_str());
+            if (0 != ret)
             {
-                lg(Error, "%s, sql语句执行失败!\n", query.c_str());
+                lg(Error, "%s, \"sql\"语句执行失败, ret: %d, mysql_error: %s\n",
+                   query.c_str(), ret, mysql_error(my));
                 return false;
             }
 
@@ -108,12 +109,14 @@ namespace ns_model_MySQL
 
             // 关闭MySQL连接
             mysql_close(my);
+            return true;
         }
 
         bool getAllQuestions(std::vector<Question> *out)
         {
             std::string sql = "select * from ";
             sql += table_name;
+            sql += ";";
 
             return queryMySQL(sql, out);
         }
@@ -125,6 +128,7 @@ namespace ns_model_MySQL
             sql += table_name;
             sql += " where number=";
             sql += question_num;
+            sql += ";";
             std::vector<Question> result;
 
             if (queryMySQL(sql, &result))

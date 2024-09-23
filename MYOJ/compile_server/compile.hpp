@@ -1,6 +1,6 @@
 // 编译模块
 #pragma once
-#include "../comm/util.hpp"
+#include "./comm/util.hpp"
 
 
 namespace ns_compile
