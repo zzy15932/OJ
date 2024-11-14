@@ -45,6 +45,8 @@ namespace ns_compile_run
             reader.parse(in_json, in_value);
 
             std::string code = in_value["code"].asString();
+            // std::cout << "输出code代码: " << std::endl;
+            // std::cout<<code<<std::endl;
 
             // 代码为空的情况，直接处理结果
             if (code.size() == 0)
@@ -83,6 +85,7 @@ namespace ns_compile_run
             // ns_run::Runner runner;
 
             status = ns_run::Runner::run(file_name, cpu_limit, mem_limit);
+            // std::cout<<status<<std::endl;
             getOutJson(status, out_json, file_name);
         }
 
@@ -97,6 +100,7 @@ namespace ns_compile_run
         static void getOutJson(int code, std::string *out_json, const std::string &file_name)
         {
             Json::Value out_value;
+            // std::cout<<"getOutJson的code:"<<std::endl;
             out_value["status"] = code;
             out_value["reason"] = codeToDesc(code, file_name);
 
@@ -122,7 +126,7 @@ namespace ns_compile_run
             Json::StyledWriter writer;
             *out_json = writer.write(out_value);
 
-            // removeTempFile(file_name);
+            removeTempFile(file_name);
         }
 
         static std::string codeToDesc(int code, const std::string &file_name)

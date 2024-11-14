@@ -1,0 +1,5 @@
+/home/zzy1/2024/my-online-judge/MYOJ/build/CMakeFiles/OJ_server.dir
+/home/zzy1/2024/my-online-judge/MYOJ/build/CMakeFiles/compile_server.dir
+/home/zzy1/2024/my-online-judge/MYOJ/build/CMakeFiles/data_server.dir
+/home/zzy1/2024/my-online-judge/MYOJ/build/CMakeFiles/edit_cache.dir
+/home/zzy1/2024/my-online-judge/MYOJ/build/CMakeFiles/rebuild_cache.dir

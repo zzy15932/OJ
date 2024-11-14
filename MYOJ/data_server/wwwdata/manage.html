@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>题库管理系统</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        h1,
+        h2 {
+            color: #333;
+        }
+
+        h1 {
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 800px;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-bottom: 40px;
+        }
+
+        .form-section {
+            margin-bottom: 40px;
+        }
+
+        .form-section h2 {
+            color: #4CAF50;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .result-container {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fafafa;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .result-container p {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>题库管理系统</h1>
+
+        <!-- 查询题目 -->
+        <div class="form-section">
+            <h2>查询指定题目</h2>
+            <label for="question-number">题目编号:</label>
+            <input type="text" id="question-number" placeholder="请输入题目编号" />
+            <button id="fetch-question">查询</button>
+
+            <div id="question-result" class="result-container"></div>
+        </div>
+
+        <!-- 删除题目 -->
+        <div class="form-section">
+            <h2>删除题目</h2>
+            <label for="delete-question-number">题目编号:</label>
+            <input type="text" id="delete-question-number" placeholder="请输入题目编号" />
+            <button id="delete-question">删除</button>
+
+            <div id="delete-result" class="result-container"></div>
+        </div>
+
+        <!-- 添加题目 -->
+        <div class="form-section">
+            <h2>添加题目</h2>
+
+            <form id="add-question-form">
+                <label for="number">题号（可选）:</label>
+                <input type="number" id="number"><br>
+
+                <label for="title">标题:</label>
+                <input type="text" id="title" placeholder="题目标题" required>
+
+                <label for="star">难度:</label>
+                <input type="text" id="star" placeholder="题目难度" required>
+
+                <label for="cpu_limit">时间限制:</label>
+                <input type="number" id="cpu_limit" placeholder="秒" required>
+
+                <label for="mem_limit">空间限制:</label>
+                <input type="number" id="mem_limit" placeholder="KB" required>
+
+                <label for="desc">题目描述:</label><br>
+                <textarea id="desc" rows="4" placeholder="题目详细描述" required></textarea><br>
+
+                <label for="header">预设代码:</label><br>
+                <textarea id="header" rows="6" placeholder="输入预设代码" required></textarea><br>
+
+                <label for="tail">测试用例:</label><br>
+                <textarea id="tail" rows="6" placeholder="输入测试用例" required></textarea><br>
+
+                <button type="submit">提交题目</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function addQuestion(data) {
+            fetch('/manage/questions',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.text();
+                    } else {
+                        throw new Error('添加题目失败');
+                    }
+                })
+                .then(message => {
+                    alert(message);
+                })
+                .catch(error => {
+                    alert(error.message);
+                });
+        }
+
+        document.getElementById('add-question-form').addEventListener('submit', (event) => {
+            event.preventDefault();
+            
+            console.log("提交题目表单");
+
+            const data = {
+                title: document.getElementById('title').value,
+                star: document.getElementById('star').value,
+                cpu_limit: parseInt(document.getElementById('cpu_limit').value, 10),  // 转换为整数
+                mem_limit: parseInt(document.getElementById('mem_limit').value, 10),  // 转换为整数
+                desc: document.getElementById('desc').value,
+                header: document.getElementById('header').value,
+                tail: document.getElementById('tail').value,
+            };
+
+            // 获取自定义题号，如果存在则添加到数据中
+            const number = document.getElementById('number').value;
+            if (number) {
+                data.number = parseInt(number, 10);
+            }
+
+            addQuestion(data);
+        });
+
+        function fetchQuestionById(id) {
+            fetch(`/manage/questions/${id}`)
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('题目未找到');
+                    }
+                })
+                .then(question => {
+                    const questionDiv = document.getElementById('question-result');
+                    questionDiv.innerHTML = `
+                    <h2>编号: ${question.number} - 标题: ${question.title}</h2>
+                    <p>难度: ${question.star}</p>
+                    <p>时间限制: ${question.cpu_limit} 秒</p>
+                    <p>空间限制: ${question.mem_limit} KB</p>
+                    <h3>题目描述</h3>
+                    <pre>${question.desc}</pre>
+                    <h3>预设代码</h3>
+                    <pre>${question.header}</pre>
+                    <h3>测试用例</h3>
+                    <pre>${question.tail}</pre>
+                `;
+                })
+                .catch(error => {
+                    const questionDiv = document.getElementById('question-result');
+                    questionDiv.innerHTML = `<p>${error.message}</p>`;
+                });
+        }
+
+        document.getElementById('fetch-question').addEventListener('click', () => {
+            const questionId = document.getElementById('question-number').value;
+            if (questionId) {
+                fetchQuestionById(questionId);
+            } else {
+                alert('请输入题目编号');
+            }
+        });
+
+        function deleteQuestionById(id) {
+            fetch(`/manage/questions/${id}`, {
+                method: 'DELETE',
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.text();
+                    } else {
+                        throw new Error('删除失败');
+                    }
+                })
+                .then(message => {
+                    const deleteResultDiv = document.getElementById('delete-result');
+                    deleteResultDiv.innerHTML = `<p>${message}</p>`;
+                })
+                .catch(error => {
+                    const deleteResultDiv = document.getElementById('delete-result');
+                    deleteResultDiv.innerHTML = `<p>${error.message}</p>`;
+                });
+        }
+
+        document.getElementById('delete-question').addEventListener('click', () => {
+            const questionId = document.getElementById('delete-question-number').value;
+            // log.console("删除问题");
+            if (questionId) {
+                if (confirm(`确定删除编号为 ${questionId} 的题目吗？`)) {
+                    deleteQuestionById(questionId);
+                }
+            } else {
+                alert('请输入题目编号');
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,5 +1,5 @@
 {
-    "cmake.sourceDirectory": "/home/zzy1/2024/MYOJ/comm/cpp-httplib-v0.7.15",
+    "cmake.sourceDirectory": "/home/zzy1/2024/my-online-judge/MYOJ",
     "files.associations": {
         "chrono": "cpp",
         "cctype": "cpp",
@@ -69,6 +69,7 @@
         "optional": "cpp",
         "typeindex": "cpp",
         "variant": "cpp",
-        "unordered_set": "cpp"
+        "unordered_set": "cpp",
+        "shared_mutex": "cpp"
     }
 }

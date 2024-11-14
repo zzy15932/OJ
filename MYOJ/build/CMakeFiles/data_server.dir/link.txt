@@ -1,0 +1,1 @@
+/usr/bin/g++-9 -g CMakeFiles/data_server.dir/data_server/data_server.cc.o -o output/data_server  -ljsoncpp -lctemplate -lmysqlclient 

@@ -5,14 +5,14 @@
 #include <string>
 #include <ctemplate/template.h>
 
-#include "OJ_model_MySQL.hpp"
+#include "../comm/Comm_model_MySQL.hpp"
 
 namespace ns_view
 {
     using namespace std;
     using namespace ns_model_MySQL;
 
-    const string template_path = "./template_html/";
+    const string template_path = "/home/zzy1/2024/my-online-judge/MYOJ/OJ_server/template_html/";
 
     class View
     {

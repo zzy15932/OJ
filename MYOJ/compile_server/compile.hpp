@@ -28,8 +28,7 @@ namespace ns_compile
             {
                 // child
                 umask(0);
-                int _stderr = open(ns_util::pathUtil::compilerError(file_name).c_str(), 
-                O_CREAT | O_WRONLY, 0664);
+                int _stderr = open(ns_util::pathUtil::compilerError(file_name).c_str(), O_CREAT | O_WRONLY, 0664);
                 if (_stderr < 0)
                 {
                     lg(Error, "子进程创建_stderr时出错, errno:%d, strerror:%s\n",errno, strerror(errno));
@@ -44,9 +43,7 @@ namespace ns_compile
                 }
 
                 // 进程替换
-                execlp("g++", "g++", "-o", ns_util::pathUtil::exe(file_name).c_str(), 
-                ns_util::pathUtil::src(file_name).c_str(), 
-                "-D", "COMPILER_ONLINE", "-std=c++11", nullptr);
+                execlp("g++", "g++", "-o", ns_util::pathUtil::exe(file_name).c_str(), ns_util::pathUtil::src(file_name).c_str(), "-D", "COMPILER_ONLINE", "-std=c++11", nullptr);
 
                 lg(Error, "进程替换错误, errno:%d, strerror:%s\n",errno, strerror(errno));
                 exit(4);

@@ -1,0 +1,1 @@
+/usr/bin/g++-9 -g CMakeFiles/OJ_server.dir/OJ_server/OJ_server.cc.o -o output/OJ_server  -ljsoncpp -lctemplate -lmysqlclient 

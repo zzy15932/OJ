@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>欢迎 - 用户登录/注册</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 登录表单容器 -->
+        <div class="form-container" id="loginForm">
+            <img src="logo.png" alt="Logo" class="logo"> 
+            <h2>欢迎回来</h2>
+            <form onsubmit="return validateLogin()">
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="loginEmail" placeholder="邮箱" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="loginPassword" placeholder="密码" required>
+                </div>
+                <button type="submit" class="btn-primary">登录</button>
+            </form>
+            <div class="social-login">
+                <button class="btn-social btn-wechat"><i class="fab fa-weixin"></i> 微信登录</button>
+                <button class="btn-social btn-qq"><i class="fab fa-qq"></i> QQ登录</button>
+            </div>
+            <p>还没有账号？<a href="#" onclick="toggleForm()">立即注册</a></p>
+        </div>
+
+        <!-- 注册表单容器 -->
+        <div class="form-container" id="registerForm" style="display: none;">
+            <img src="logo.png" alt="Logo" class="logo"> 
+            <h2>创建账号</h2>
+            <form onsubmit="return validateRegister()">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="registerUsername" placeholder="用户名" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="registerEmail" placeholder="邮箱" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="registerPassword" placeholder="密码" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="confirmPassword" placeholder="确认密码" required>
+                </div>
+                <button type="submit" class="btn-primary">注册</button>
+            </form>
+            <p>已有账号？<a href="#" onclick="toggleForm()">立即登录</a></p>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

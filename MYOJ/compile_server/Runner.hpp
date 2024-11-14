@@ -32,8 +32,9 @@ namespace ns_run
                 exit(6);
             }
 
+            // 内存是按照KB为单位的
             struct rlimit ml;
-            ml.rlim_cur = mem_limit;
+            ml.rlim_cur = mem_limit * 1024;
             ml.rlim_max = RLIM_INFINITY;
 
             if (setrlimit(RLIMIT_AS, &ml) != 0)
@@ -82,13 +83,13 @@ namespace ns_run
                     lg(Error, "运行时文件描述符重定向失败, errno: %d, strerror: %s\n", errno, strerror(errno));
                     exit(-3);
                 }
-
                 setProLimit(cpu_limit, mem_limit);
-                execl(_exe.c_str(), _exe.c_str(), nullptr);
+                // std::cout<<"子进程执行程序替换"<< _exe << std::endl;
+                execlp(_exe.c_str(), _exe.c_str(), nullptr);
 
                 lg(Error, "运行时程序替换失败, errno: %d, strerror: %s\n", errno, strerror(errno));
                 // ns_util::fileUtil::writeFile("./debugErrorLog.txt", )
-		open("./debugErrorLog.txt", O_CREAT, 0664);
+                // open("./debugErrorLog.txt", O_CREAT, 0664);
                 close(_stdinfd);
                 close(_stdoutfd);
                 close(_stderrfd);
@@ -112,17 +113,21 @@ namespace ns_run
                 {
                     int exit_code = WEXITSTATUS(status);
                     lg(Info, "%s 正常退出, exit_code = %d\n", _exe.c_str(), exit_code);
+                    // std::cout << "进入WIFEXITED(status)" << std::endl;
                     return exit_code;
                 }
                 else if (WIFSIGNALED(status))
                 {
                     int term_signal = WTERMSIG(status);
                     lg(Error, "%s 被信号终止, signal = %d\n", _exe.c_str(), term_signal);
+                    // std::cout << "进入WIFSIGNALED(status)，打印：" << status << std::endl;
                     return term_signal;
                 }
+
                 // int run_res = status & 0x7f;
                 // lg(Info, "%s 运行完毕, run_res = %d\n", _exe.c_str(), run_res);
                 // return run_res; // for debug
+                
                 return status & 0x7f;
             }
             else

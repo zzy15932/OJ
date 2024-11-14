@@ -1,260 +1,276 @@
 <!DOCTYPE html>
-<html lang="en">
- 
+<html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{number}}.{{title}}</title>
-    <!-- 引入ACE插件 -->
-    <!-- 官网链接：https://ace.c9.io/ -->
-    <!-- CDN链接：https://cdnjs.com/libraries/ace -->
-    <!-- 使用介绍：https://www.iteye.com/blog/ybc77107-2296261 -->
-    <!-- https://justcode.ikeepstudying.com/2016/05/ace-editor-%E5%9C%A8%E7%BA%BF%E4%BB%A3%E7%A0%81%E7%BC%96%E8%BE%91%E6%9E%81%E5%85%B6%E9%AB%98%E4%BA%AE/ -->
-    <!-- 引入ACE CDN -->
+    <!-- 引入 Ace 编辑器相关脚本 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/ace.js" type="text/javascript"
         charset="utf-8"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/ext-language_tools.js" type="text/javascript"
         charset="utf-8"></script>
-    <!-- 引入jquery CDN -->
+    <!-- 引入 jQuery -->
     <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
- 
+    <!-- 引入 Font Awesome 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
+        /* 全局样式重置 */
         * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
- 
-        html,
+
         body {
-            width: 100%;
-            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
         }
- 
-        .container .navbar {
-            width: 100%;
-            height: 50px;
-            background-color: black;
-            /* 给父级标签设置overflow，取消后续float带来的影响 */
-            overflow: hidden;
+
+        /* 容器样式 */
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
         }
- 
-        .container .navbar a {
-            /* 设置a标签是行内块元素，允许你设置宽度 */
-            display: inline-block;
-            /* 设置a标签的宽度,a标签默认行内元素，无法设置宽度 */
-            width: 80px;
-            /* 设置字体颜色 */
-            color: white;
-            /* 设置字体的大小 */
-            font-size: large;
-            /* 设置文字的高度和导航栏一样的高度 */
-            line-height: 50px;
-            /* 去掉a标签的下划线 */
+
+        /* 导航栏样式 */
+        .navbar {
+            background-color: #ffffff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar a {
+            color: #3c3c3c;
             text-decoration: none;
-            /* 设置a标签中的文字居中 */
-            text-align: center;
+            margin: 0 15px;
+            font-weight: 500;
+            transition: color 0.3s ease;
         }
- 
-        /* 设置鼠标事件 */
-        .container .navbar a:hover {
-            background-color: green;
+
+        .navbar a:hover {
+            color: #40a9ff;
         }
- 
-        .container .navbar .login {
-            float: right;
+
+        .navbar .login {
+            background-color: #40a9ff;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
         }
- 
-        .container .part1 {
-            width: 100%;
-            height: 600px;
+
+        .navbar .login:hover {
+            background-color: #1890ff;
+        }
+
+        /* 主要内容区域样式 */
+        .part1 {
+            display: flex;
+            flex-grow: 1;
             overflow: hidden;
+            background-color: #ffffff;
+            margin: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
         }
- 
-        .container .part1 .left_desc {
+
+        /* 左侧题目描述区域 */
+        .left_desc {
             width: 50%;
-            height: 600px;
-            float: left;
-            overflow: scroll;
+            padding: 20px;
+            overflow-y: auto;
+            border-right: 1px solid #e8e8e8;
         }
- 
-        .container .part1 .left_desc h3 {
-            padding-top: 10px;
-            padding-left: 10px;
+
+        .left_desc h3 {
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            color: #1a1a1a;
         }
- 
-        .container .part1 .left_desc pre {
-            padding-top: 10px;
-            padding-left: 10px;
-            font-size: medium;
-            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+
+        .left_desc pre {
+            white-space: pre-wrap;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
         }
- 
-        .container .part1 .right_code {
+
+        /* 右侧代码编辑器区域 */
+        .right_code {
             width: 50%;
-            float: right;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            /*  添加此行  */
         }
- 
-        .container .part1 .right_code .ace_editor {
-            height: 600px;
+
+        .ace_editor {
+            flex-grow: 1;
         }
- 
-        .container .part2 {
-            width: 100%;
-            overflow: hidden;
+
+        /* 底部提交区域 */
+        .part2 {
+            padding: 15px;
+            background-color: #ffffff;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
- 
-        .container .part2 .result {
-            width: 300px;
-            float: left;
+
+        .btn-submit {
+            background-color: #52c41a;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
         }
- 
-        .container .part2 .btn-submit {
-            width: 120px;
-            height: 50px;
-            font-size: large;
-            float: right;
-            background-color: #26bb9c;
-            color: #FFF;
-            /* 给按钮带上圆角 */
-            /* border-radius: 1ch; */
-            border: 0px;
-            margin-top: 10px;
-            margin-right: 10px;
+
+        .btn-submit:hover {
+            background-color: #389e0d;
         }
- 
-        .container .part2 button:hover {
-            color: green;
+
+        .result {
+            flex-grow: 1;
+            margin-right: 20px;
         }
- 
-        .container .part2 .result {
-            margin-top: 15px;
-            margin-left: 15px;
+
+        /* 难度标签样式 */
+        .difficulty {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-left: 10px;
+            font-weight: bold;
         }
- 
-        .container .part2 .result pre {
-            font-size: large;
+
+        .easy {
+            background-color: #52c41a;
+            color: white;
+        }
+
+        .medium {
+            background-color: #faad14;
+            color: white;
+        }
+
+        .hard {
+            background-color: #f5222d;
+            color: white;
         }
     </style>
 </head>
- 
+
 <body>
     <div class="container">
-        <!-- 导航栏， 功能不实现-->
+        <!-- 导航栏 -->
         <div class="navbar">
-            <a href="/">首页</a>
-            <a href="/all_questions">题库</a>
-            <a href="#">竞赛</a>
-            <a href="#">讨论</a>
-            <a href="#">求职</a>
-            <a class="login" href="#">登录</a>
+            <div>
+                <a href="/"><i class="fas fa-home"></i> 首页</a>
+                <a href="/all_questions"><i class="fas fa-list"></i> 题库</a>
+                <a href="#"><i class="fas fa-trophy"></i> 竞赛</a>
+                <a href="#"><i class="fas fa-comments"></i> 讨论</a>
+                <a href="#"><i class="fas fa-briefcase"></i> 求职</a>
+            </div>
+            <a class="login" href="#"><i class="fas fa-user"></i> 登录</a>
         </div>
-        <!-- 左右呈现，题目描述和预设代码 -->
+
+        <!-- 主要内容区域 -->
         <div class="part1">
+            <!-- 左侧题目描述 -->
             <div class="left_desc">
-                <h3><span id="number">{{number}}</span>.{{title}}_{{star}}</h3>
+                <h3>
+                    <span id="number">{{number}}</span>.{{title}}
+                    <span class="difficulty {{star}}">{{star}}</span>
+                </h3>
                 <pre>{{desc}}</pre>
             </div>
+            <!-- 右侧代码编辑器 -->
             <div class="right_code">
-                <pre id="code" class="ace_editor"><textarea class="ace_text-input">{{pre_code}}</textarea></pre>
+                <div id="code" class="ace_editor"><textarea class="ace_text-input">{{pre_code}}</textarea></div>
             </div>
         </div>
-        <!-- 提交并且得到结果，并显示 -->
+
+        <!-- 底部提交区域 -->
         <div class="part2">
             <div class="result"></div>
-            <button class="btn-submit" onclick="submit()">提交代码</button>
+            <button class="btn-submit" onclick="submit()"><i class="fas fa-paper-plane"></i> 提交代码</button>
         </div>
     </div>
+
     <script>
-        //初始化对象
-        editor = ace.edit("code");
- 
-        //设置风格和语言（更多风格和语言，请到github上相应目录查看）
-        // 主题大全：http://www.manongjc.com/detail/25-cfpdrwkkivkikmk.html
+        // 初始化 Ace 编辑器
+        var editor = ace.edit("code");
         editor.setTheme("ace/theme/monokai");
         editor.session.setMode("ace/mode/c_cpp");
- 
-        // 字体大小
         editor.setFontSize(16);
-        // 设置默认制表符的大小:
         editor.getSession().setTabSize(4);
- 
-        // 设置只读（true时只读，用于展示代码）
         editor.setReadOnly(false);
- 
-        // 启用提示菜单
         ace.require("ace/ext/language_tools");
         editor.setOptions({
             enableBasicAutocompletion: true,
             enableSnippets: true,
             enableLiveAutocompletion: true
         });
- 
+
+        // 提交代码函数
         function submit() {
-            // alert("嘿嘿!");
-            // 1. 收集当前页面的有关数据, 1. 题号 2.代码
             var code = editor.getSession().getValue();
-            // console.log(code);
-            var number = $(".container .part1 .left_desc h3 #number").text();
-            // console.log(number);
+            var number = $("#number").text();
             var judge_url = "/judge/" + number;
-            // console.log(judge_url);
-            // 2. 构建json，并通过ajax向后台发起基于http的json请求
             $.ajax({
-                method: 'Post',   // 向后端发起请求的方式
-                url: judge_url,   // 向后端指定的url发起请求
-                dataType: 'json', // 告知server，我需要什么格式
-                contentType: 'application/json;charset=utf-8',  // 告知server，我给你的是什么格式
+                method: 'Post',
+                url: judge_url,
+                dataType: 'json',
+                contentType: 'application/json;charset=utf-8',
                 data: JSON.stringify({
                     'code': code,
                     'input': ''
                 }),
                 success: function (data) {
-                    //成功得到结果
-                    // console.log(data);
                     show_result(data);
                 }
             });
-            // 3. 得到结果，解析并显示到 result中
-            function show_result(data) {
-                // console.log(data.status);
-                // console.log(data.reason);
-                // 拿到result结果标签
-                var result_div = $(".container .part2 .result");
-                // 清空上一次的运行结果
-                result_div.empty();
- 
-                // 首先拿到结果的状态码和原因结果
-                var _status = data.status;
-                var _reason = data.reason;
- 
-                var reason_lable = $("<p>", {
-                    text: _reason
-                });
-                reason_lable.appendTo(result_div);
- 
-                if (status == 0) {
-                    // 请求是成功的，编译运行过程没出问题，但是结果是否通过看测试用例的结果
-                    var _stdout = data.stdout;
-                    var _stderr = data.stderr;
- 
-                    var stdout_lable = $("<pre>", {
-                        text: _stdout
-                    });
- 
-                    var stderr_lable = $("<pre>", {
-                        text: _stderr
-                    })
- 
-                    stdout_lable.appendTo(result_div);
-                    stderr_lable.appendTo(result_div);
-                }
-                else {
-                    // 编译运行出错,do nothing
-                }
+        }
+
+        // 显示结果函数
+        function show_result(data) {
+            var result_div = $(".result");
+            result_div.empty();
+            var _status = data.status;
+            var _reason = data.reason;
+            var reason_label = $("<p>", { text: _reason });
+            reason_label.appendTo(result_div);
+            if (_status == 0) {
+                var _stdout = data.stdout;
+                var _stderr = data.stderr;
+                var stdout_label = $("<pre>", { text: _stdout });
+                var stderr_label = $("<pre>", { text: _stderr });
+                stdout_label.appendTo(result_div);
+                stderr_label.appendTo(result_div);
             }
         }
     </script>
+    <!--PC版-->
+    <div id="SOHUCS" sid={{number}}.{{title}}></div>
+    <script charset="utf-8" type="text/javascript" src="https://cy-cdn.kuaizhan.com/upload/changyan.js"></script>
+    <script type="text/javascript">
+        window.changyan.api.config({
+            appid: 'cyxvREibp',
+            conf: 'prod_0eeee7deaa033b896c3fd301b0e2c3d3'
+        });
+    </script>
 </body>
- 
+
 </html>

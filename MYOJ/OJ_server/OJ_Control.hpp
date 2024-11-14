@@ -6,7 +6,7 @@
 #include <jsoncpp/json/json.h>
 
 #include "OJ_view.hpp"
-#include "OJ_model_MySQL.hpp"
+#include "../comm/Comm_model_MySQL.hpp"
 #include "../comm/util.hpp"
 #include "../comm/httplib.h"
 
@@ -82,7 +82,7 @@ namespace ns_control
         std::atomic_uint a_loads; // 负载量，原子类型，保证线程安全
     };
 
-    const std::string conf_path = "./service_machine.conf";
+    const std::string conf_path = "/home/zzy1/2024/my-online-judge/MYOJ/OJ_server/service_machine.conf";
 
     class LoadBalance
     {
@@ -337,7 +337,7 @@ namespace ns_control
 
                 lg(Info, "选择主机id: %d, ip: %s, port: %d, load: %d 尝试进行编译运行服务...\n",
                    host_id, pmachine->getIP().c_str(), pmachine->getPort(), pmachine->getLoad());
-
+                // std::cout << "发起判题请求" << http_pattern.c_str() << std::endl;
                 httplib::Result res = cli.Post(http_pattern.c_str(), compile_string, "application/json;charset=utf-8");
                 // httplib::Result 类型使httplib库中的定义的类，其中重载了->操作符
                 // 可以用于获取response中的各种信息

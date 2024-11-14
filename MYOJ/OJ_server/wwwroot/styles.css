@@ -1,0 +1,116 @@
+body {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f2f5; /* 浅灰色背景 */
+}
+
+.container {
+    background-color: white;
+    padding: 30px 40px; /* 增加内边距 */
+    border-radius: 8px; /* 更圆润的边角 */
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1); /* 更柔和的阴影 */
+}
+
+.form-container {
+    width: 380px; /* 调整宽度 */
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px; /* 增加标题底部间距 */
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group {
+    position: relative; /* 用于放置图标 */
+    margin-bottom: 15px; /* 调整输入框间距 */
+}
+
+/* ...其他样式... */
+
+input {
+    width: 100%;
+    padding: 12px 12px; 
+    padding-left: 40px;  /* 为图标留出空间 */
+    border: 1px solid #d9d9d9; 
+    border-radius: 4px; 
+    box-sizing: border-box;
+}
+
+.input-group i {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    color: #999; 
+}
+
+/* ...其他样式... */
+
+
+button {
+    background-color: #1890ff; /* LeetCode 蓝色 */
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease; /* 添加过渡效果 */
+}
+
+button:hover {
+    background-color: #40a9ff; /* 更深的蓝色 */
+}
+
+p {
+    text-align: center;
+    margin-top: 15px;
+}
+
+a {
+    color: #1890ff;
+    text-decoration: none;
+}
+
+/* 社交登录按钮样式 */
+.social-login {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.btn-social {
+    width: 48%;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-wechat {
+    background-color: #09bb07; /* 微信绿色 */
+    color: white;
+}
+
+.btn-qq {
+    background-color: #00a0e9; /* QQ蓝色 */
+    color: white;
+}
+
+.btn-social i {
+    margin-right: 8px;
+}

@@ -1,143 +1,173 @@
 <!DOCTYPE html>
-<html lang="en">
- 
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>在线OJ-题目列表</title>
+    <title>在线OJ - 题目列表</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
-        /* 起手式, 100%保证我们的样式设置可以不受默认影响 */
+        /* 全局样式重置 */
         * {
-            /* 消除网页的默认外边距 */
-            margin: 0px;
-            /* 消除网页的默认内边距 */
-            padding: 0px;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
- 
-        html,
+
         body {
-            width: 100%;
-            height: 100%;
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
         }
- 
-        .container .navbar {
-            width: 100%;
-            height: 50px;
-            background-color: black;
-            /* 给父级标签设置overflow，取消后续float带来的影响 */
-            overflow: hidden;
+
+        /* 容器样式 */
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
- 
-        .container .navbar a {
-            /* 设置a标签是行内块元素，允许你设置宽度 */
-            display: inline-block;
-            /* 设置a标签的宽度,a标签默认行内元素，无法设置宽度 */
-            width: 80px;
-            /* 设置字体颜色 */
+
+        /* 导航栏样式 */
+        .navbar {
+            background-color: #ffffff;
+            padding: 15px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar a {
+            color: #3c3c3c;
+            text-decoration: none;
+            margin-right: 20px;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        .navbar a:hover {
+            color: #1890ff;
+        }
+
+        .navbar .login {
+            background-color: #1890ff;
             color: white;
-            /* 设置字体的大小 */
-            font-size: large;
-            /* 设置文字的高度和导航栏一样的高度 */
-            line-height: 50px;
-            /* 去掉a标签的下划线 */
-            text-decoration: none;
-            /* 设置a标签中的文字居中 */
-            text-align: center;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
         }
- 
-        /* 设置鼠标事件 */
-        .container .navbar a:hover {
-            background-color: green;
+
+        .navbar .login:hover {
+            background-color: #40a9ff;
         }
- 
-        .container .navbar .login {
-            float: right;
+
+        /* 题目列表区域样式 */
+        .question-list-container {
+            padding: 40px;
+            flex: 1;
         }
- 
-        .container .question_list {
-            padding-top: 50px;
-            width: 800px;
-            height: 100%;
-            margin: 0px auto;
-            /* background-color: #ccc; */
-            text-align: center;
+
+        .question-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
         }
- 
-        .container .question_list table {
+
+        .question-list-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .question-list-table {
             width: 100%;
-            font-size: large;
-            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-            margin-top: 50px;
-            background-color: rgb(243, 248, 246);
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
- 
-        .container .question_list h1 {
-            color: green;
+
+        .question-list-table th,
+        .question-list-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
         }
- 
-        .container .question_list table .item {
-            width: 100px;
-            height: 40px;
-            font-size: large;
-            font-family: 'Times New Roman', Times, serif;
+
+        .question-list-table th {
+            background-color: #f5f5f5;
+            font-weight: 600;
         }
- 
-        .container .question_list table .item a {
+
+        .question-list-table td a {
+            color: #1890ff;
             text-decoration: none;
-            color: black;
+            transition: color 0.3s ease;
         }
- 
-        .container .question_list table .item a:hover {
-            color: blue;
-            text-decoration: underline;
+
+        .question-list-table td a:hover {
+            color: #40a9ff;
         }
- 
-        .container .footer {
-            width: 100%;
-            height: 50px;
+
+        /* 页脚样式 */
+        .footer {
+            background-color: #ffffff;
+            padding: 15px 20px;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
             text-align: center;
-            line-height: 50px;
-            color: #ccc;
-            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .nav-left {
+            display: flex; /* 左侧元素也使用 flexbox */
+            align-items: center; /* 垂直居中 */
         }
     </style>
 </head>
- 
 <body>
     <div class="container">
-        <!-- 导航栏， 功能不实现-->
+        <!-- 导航栏 -->
         <div class="navbar">
-            <a href="/">首页</a>
-            <a href="/all_questions">题库</a>
-            <a href="#">竞赛</a>
-            <a href="#">讨论</a>
-            <a href="#">求职</a>
-            <a class="login" href="#">登录</a>
+            <div class="nav-left"> 
+                <a href="/"><i class="fas fa-home"></i> 首页</a>
+                <a href="/all_questions"><i class="fas fa-list"></i> 题库</a>
+                <a href="#"><i class="fas fa-trophy"></i> 竞赛</a>
+                <a href="#"><i class="fas fa-comments"></i> 讨论</a>
+                <a href="#"><i class="fas fa-briefcase"></i> 求职</a>
+            </div>
+            <a class="login" href="#"><i class="fas fa-user"></i> 登录</a>
         </div>
-        <div class="question_list">
-            <h1>OnlineJuge题目列表</h1>
-            <table>
-                <tr>
-                    <th class="item">编号</th>
-                    <th class="item">标题</th>
-                    <th class="item">难度</th>
-                </tr>
-                {{#question_list}}
+
+        <!-- 题目列表区域 -->
+        <div class="question-list-container">
+            <div class="question-list-header">
+                <h1 class="question-list-title">Online Judge 题目列表</h1>
+            </div>
+
+            <table class="question-list-table">
+                <thead>
                     <tr>
-                        <td class="item">{{number}}</td>
-                        <td class="item"><a href="/question/{{number}}">{{title}}</a></td>
-                        <td class="item">{{star}}</td>
+                        <th>编号</th>
+                        <th>标题</th>
+                        <th>难度</th>
                     </tr>
-                {{/question_list}}
+                </thead>
+                <tbody>
+                    {{#question_list}}
+                        <tr>
+                            <td>{{number}}</td>
+                            <td><a href="/question/{{number}}">{{title}}</a></td>
+                            <td>{{star}}</td>
+                        </tr>
+                    {{/question_list}}
+                </tbody>
             </table>
         </div>
-        <div class="footer">
-            <!-- <hr> -->
-            <h4>@zzy33989</h4>
-        </div>
+
+        <!-- 页脚 -->
+        <!-- <div class="footer">
+            &copy; 2024 zzy33989. All rights reserved.
+        </div> -->
     </div>
- 
 </body>
- 
 </html>

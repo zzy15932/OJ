@@ -1,0 +1,17 @@
+[
+{
+  "directory": "/home/zzy1/2024/my-online-judge/MYOJ/build",
+  "command": "/usr/bin/g++-9   -g -std=gnu++11 -o CMakeFiles/OJ_server.dir/OJ_server/OJ_server.cc.o -c /home/zzy1/2024/my-online-judge/MYOJ/OJ_server/OJ_server.cc",
+  "file": "/home/zzy1/2024/my-online-judge/MYOJ/OJ_server/OJ_server.cc"
+},
+{
+  "directory": "/home/zzy1/2024/my-online-judge/MYOJ/build",
+  "command": "/usr/bin/g++-9   -g -std=gnu++11 -o CMakeFiles/compile_server.dir/compile_server/compile_server.cc.o -c /home/zzy1/2024/my-online-judge/MYOJ/compile_server/compile_server.cc",
+  "file": "/home/zzy1/2024/my-online-judge/MYOJ/compile_server/compile_server.cc"
+},
+{
+  "directory": "/home/zzy1/2024/my-online-judge/MYOJ/build",
+  "command": "/usr/bin/g++-9   -g -std=gnu++11 -o CMakeFiles/data_server.dir/data_server/data_server.cc.o -c /home/zzy1/2024/my-online-judge/MYOJ/data_server/data_server.cc",
+  "file": "/home/zzy1/2024/my-online-judge/MYOJ/data_server/data_server.cc"
+}
+]

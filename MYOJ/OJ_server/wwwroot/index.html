@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
  
 <head>
@@ -83,7 +83,7 @@
  
 <body>
     <div class="container">
-        <!-- 导航栏， 功能不实现-->
+        导航栏， 功能不实现
         <div class="navbar">
             <a href="/">首页</a>
             <a href="/all_questions">题库</a>
@@ -92,13 +92,142 @@
             <a href="#">求职</a>
             <a class="login" href="#">登录</a>
         </div>
-        <!-- 网页的内容 -->
+        网页的内容 
         <div class="content">
-            <h1 class="font_">欢迎来到OnlineJudge平台</h1>
-            <p class="font_">这是由小组独立开发的一个在线OJ平台</p>
+            <h1 class="font_">欢迎来到我的OnlineJudge平台</h1>
+            <p class="font_">这是我个人独立开发的一个在线OJ平台</p>
             <a class="font_" href="/all_questions">点击我开始编程</a>
         </div>
     </div>
 </body>
  
+</html> -->
+
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OJ系统</title>
+    <!-- 引入Font Awesome图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        /* 全局样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+
+        /* 容器样式 */
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* 导航栏样式 */
+        .navbar {
+            background-color: #ffffff;
+            padding: 15px 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar a {
+            color: #3c3c3c;
+            text-decoration: none;
+            margin-right: 20px;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        .navbar a:hover {
+            color: #1890ff;
+        }
+
+        .navbar .login {
+            float: right;
+            background-color: #1890ff;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .navbar .login:hover {
+            background-color: #40a9ff;
+        }
+
+        /* 内容区域样式 */
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .content h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #1890ff;
+        }
+
+        .content p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .content a {
+            display: inline-block;
+            background-color: #52c41a;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+        }
+
+        .content a:hover {
+            background-color: #389e0d;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- 导航栏 -->
+        <div class="navbar">
+            <a href="/"><i class="fas fa-home"></i> 首页</a>
+            <a href="/all_questions"><i class="fas fa-list"></i> 题库</a>
+            <a href="#"><i class="fas fa-trophy"></i> 竞赛</a>
+            <a href="#"><i class="fas fa-comments"></i> 讨论</a>
+            <a href="#"><i class="fas fa-briefcase"></i> 求职</a>
+            <a class="login" href="#"><i class="fas fa-user"></i> 登录</a>
+        </div>
+
+        <!-- 网页的主要内容 -->
+        <div class="content">
+            <h1>欢迎来到OnlineJudge平台</h1>
+            <p>这是一个独立开发的在线OJ平台，旨在为编程爱好者提供优质的学习和练习环境。在这里，你可以挑战各种编程题目，提升你的编程技能。</p>
+            <a href="/all_questions">开始编程之旅 <i class="fas fa-arrow-right"></i></a>
+        </div>
+    </div>
+</body>
+
 </html>

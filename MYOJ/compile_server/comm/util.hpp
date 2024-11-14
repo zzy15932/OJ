@@ -19,7 +19,7 @@
 namespace ns_util
 {
     // 公共编译路径
-    const std::string defaultTempPath = "./temp/";
+    const std::string defaultTempPath = "/home/zzy1/2024/my-online-judge/MYOJ/compile_server/temp/";
 
     // 给文件名加路径和后缀
     class pathUtil
